@@ -100,7 +100,11 @@
         // Создание нового URL с параметром
         
         url.searchParams.set('coordinates', coordinatesString);
-
+        navigator.clipboard.writeText(url.toString()).then(function() {
+            alert('Cсылка скопировано в буфер обмена');
+        }, function(err) {
+            console.error('Ошибка при копировании: ', err);
+        });
         console.log('New URL:', url.toString());
       }
     }
