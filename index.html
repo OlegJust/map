@@ -49,9 +49,11 @@
       drawnItems.addLayer(layer);
     });
 
+    var url = new URL(window.location.href);
+    
     var coordinatesStringFromUrl = url.searchParams.get('coordinates');
 
-    var polygonCoordinates
+    var polygonCoordinates = false
     if (coordinatesStringFromUrl) {
         // Десериализация строки JSON обратно в массив
         var coordinatesFromUrl = JSON.parse(coordinatesStringFromUrl);
@@ -67,29 +69,39 @@
 
     // ];
 
-    var polygon = L.polygon(polygonCoordinates, {
-      color: 'blue',
-      weight: 3,
-      opacity: 0.6,
-      fillColor: '#00FFFF',
-      fillOpacity: 0.2
-    }).addTo(map);
+    if(polygonCoordinates) {
+        var polygon = L.polygon(polygonCoordinates, {
+        color: 'blue',
+        weight: 3,
+        opacity: 0.6,
+        fillColor: '#00FFFF',
+        fillOpacity: 0.2
+      }).addTo(map);
 
-    drawnItems.addLayer(polygon);
+      drawnItems.addLayer(polygon);
+    }
+    
 
+    
 
     // Функция для сохранения GeoJSON данных на сервер
     function saveData() {
-      if (polygonCoordinates) {
+      var data = drawnItems.toGeoJSON();
+      if (data.features[0].geometry.coordinates[0]) {
+        
+        var swappedCoordinates = data.features[0].geometry.coordinates[0].map(function(coord) {
+          return [coord[1], coord[0]];
+        });
+        
 
-      // Сериализация массива в строку JSON
-      var coordinatesString = JSON.stringify(polygonCoordinates);
+        // Сериализация массива в строку JSON
+        var coordinatesString = JSON.stringify(swappedCoordinates);
 
-      // Создание нового URL с параметром
-      var url = new URL(window.location.href);
-      url.searchParams.set('coordinates', coordinatesString);
+        // Создание нового URL с параметром
+        
+        url.searchParams.set('coordinates', coordinatesString);
 
-      console.log('New URL:', url.toString());
+        console.log('New URL:', url.toString());
       }
     }
 
