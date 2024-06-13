@@ -76,9 +76,6 @@
       var url = new URL(window.location.href);
       url.searchParams.set('coordinates', coordinatesString);
 
-      // Установка нового URL без перезагрузки страницы
-      history.replaceState({}, '', url.toString());
-
       console.log('New URL:', url.toString());
     }
 
