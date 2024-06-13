@@ -49,12 +49,23 @@
       drawnItems.addLayer(layer);
     });
 
-    
-     // Добавление полигона с указанными координатами
-     var polygonCoordinates = [
-      [52.423674 , 10.7757 ],[52.419278 , 10.772266],[52.412681,  10.780506],[52.408598,  10.796814],[52.42001 , 10.797157],[52.424512,  10.777416],[52.423674,  10.7757]
+    var coordinatesStringFromUrl = url.searchParams.get('coordinates');
 
-    ];
+    var polygonCoordinates
+    if (coordinatesStringFromUrl) {
+        // Десериализация строки JSON обратно в массив
+        var coordinatesFromUrl = JSON.parse(coordinatesStringFromUrl);
+        polygonCoordinates = coordinatesFromUrl
+        console.log('Coordinates from URL:', coordinatesFromUrl);
+    } else {
+        console.log('No coordinates found in URL');
+    }
+    
+    //  // Добавление полигона с указанными координатами ?coordinates=%5B%5B52.423674%2C10.7757%5D%2C%5B52.419278%2C10.772266%5D%2C%5B52.412681%2C10.780506%5D%2C%5B52.408598%2C10.796814%5D%2C%5B52.42001%2C10.797157%5D%2C%5B52.424512%2C10.777416%5D%2C%5B52.423674%2C10.7757%5D%5D
+    //  var polygonCoordinates = [
+    //   [52.423674 , 10.7757 ],[52.419278 , 10.772266],[52.412681,  10.780506],[52.408598,  10.796814],[52.42001 , 10.797157],[52.424512,  10.777416],[52.423674,  10.7757]
+
+    // ];
 
     var polygon = L.polygon(polygonCoordinates, {
       color: 'blue',
@@ -69,14 +80,17 @@
 
     // Функция для сохранения GeoJSON данных на сервер
     function saveData() {
+      if (polygonCoordinates) {
+
       // Сериализация массива в строку JSON
-      var coordinatesString = JSON.stringify(coordinates);
+      var coordinatesString = JSON.stringify(polygonCoordinates);
 
       // Создание нового URL с параметром
       var url = new URL(window.location.href);
       url.searchParams.set('coordinates', coordinatesString);
 
       console.log('New URL:', url.toString());
+      }
     }
 
 
