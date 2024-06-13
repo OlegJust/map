@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet Draw Example</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <style>
+    #map { height: 500px; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <button id="saveButton">Save</button>
+  <button id="printButton">Print Map</button>
+  <script>
+    // Инициализация карты
+    var map = L.map('map').setView([52.419278 , 10.772266], 13);
+
+    // Добавление тайлового слоя
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // Создание FeatureGroup для хранения нарисованных объектов
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+   
+
+    // Настройка панели инструментов для рисования
+    var drawControl = new L.Control.Draw({
+      edit: {
+        featureGroup: drawnItems
+      },
+      draw: {
+        polygon: true,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+        circlemarker: false
+      }
+    });
+    map.addControl(drawControl);
+
+    // Обработка события создания нового объекта
+    map.on(L.Draw.Event.CREATED, function (event) {
+      var layer = event.layer;
+      drawnItems.addLayer(layer);
+    });
+
+    
+     // Добавление полигона с указанными координатами
+     var polygonCoordinates = [
+      [52.423674 , 10.7757 ],[52.419278 , 10.772266],[52.412681,  10.780506],[52.408598,  10.796814],[52.42001 , 10.797157],[52.424512,  10.777416],[52.423674,  10.7757]
+
+    ];
+
+    var polygon = L.polygon(polygonCoordinates, {
+      color: 'blue',
+      weight: 3,
+      opacity: 0.6,
+      fillColor: '#00FFFF',
+      fillOpacity: 0.2
+    }).addTo(map);
+
+    drawnItems.addLayer(polygon);
+
+
+    // Функция для сохранения GeoJSON данных на сервер
+    function saveData() {
+      var data = drawnItems.toGeoJSON();
+      var convertedData = JSON.stringify(data);
+
+      // Создание Blob и URL для скачивания
+      var blob = new Blob([convertedData], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      console.log(url)
+      // Создание ссылки для скачивания файла
+      var downloadLink = document.getElementById("downloadLink");
+      downloadLink.href = url;
+      downloadLink.download = 'polygonData.geojson';
+      downloadLink.style.display = 'block';
+      downloadLink.textContent = 'Download Polygon Data';
+    }
+
+
+    function printMap() {
+      window.print();
+    }
+
+    // Обработка нажатия кнопки печати
+    document.getElementById("printButton").addEventListener("click", printMap);
+
+    // Обработка нажатия кнопки сохранения
+    document.getElementById("saveButton").addEventListener("click", saveData);
+  </script>
+</body>
+</html>
