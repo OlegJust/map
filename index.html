@@ -69,19 +69,17 @@
 
     // Функция для сохранения GeoJSON данных на сервер
     function saveData() {
-      var data = drawnItems.toGeoJSON();
-      var convertedData = JSON.stringify(data);
+      // Сериализация массива в строку JSON
+      var coordinatesString = JSON.stringify(coordinates);
 
-      // Создание Blob и URL для скачивания
-      var blob = new Blob([convertedData], { type: 'application/json' });
-      var url = URL.createObjectURL(blob);
-      console.log(url)
-      // Создание ссылки для скачивания файла
-      var downloadLink = document.getElementById("downloadLink");
-      downloadLink.href = url;
-      downloadLink.download = 'polygonData.geojson';
-      downloadLink.style.display = 'block';
-      downloadLink.textContent = 'Download Polygon Data';
+      // Создание нового URL с параметром
+      var url = new URL(window.location.href);
+      url.searchParams.set('coordinates', coordinatesString);
+
+      // Установка нового URL без перезагрузки страницы
+      history.replaceState({}, '', url.toString());
+
+      console.log('New URL:', url.toString());
     }
 
 
